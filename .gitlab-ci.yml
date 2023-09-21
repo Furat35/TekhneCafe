@@ -1,0 +1,25 @@
+# Define the stages of the pipeline
+stages:
+  - build
+  - publish
+
+# Job to build the project
+build:
+  only:
+    - main #branch name 
+  stage: build
+  script:
+    - dotnet build 
+
+# Job to publish the project
+publish:
+  stage: publish
+  script:
+    - dotnet publish "C:\Gitlab-Runner\builds\zxjeuUkx\0\tekhnestars2023\tekhnecafeapi\TekhneCafe.Api\TekhneCafe.Api.csproj" -c release -o "C:\\Publish"
+    - C:\Windows\System32\inetsrv\appcmd.exe stop apppool tekhnecafe
+    - C:\Windows\System32\inetsrv\appcmd.exe stop site tekhnecafe
+    - remove-item "D:\Sites\Cafe\*" -recurse -force
+    - xcopy "C:\\Publish" "D:\Sites\Cafe" /s /e
+    - C:\Windows\System32\inetsrv\appcmd.exe start apppool tekhnecafe
+    - C:\Windows\System32\inetsrv\appcmd.exe start site tekhnecafe
+
